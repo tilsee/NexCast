@@ -8,9 +8,6 @@ import epd7in5_V2
 # get functions from Pillow
 from PIL import Image, ImageDraw, ImageFont
 
-# image directory
-pic_dir = 'pic'
-
 logging.basicConfig(level=logging.DEBUG)
 
 try:
@@ -28,8 +25,8 @@ try:
     print('height', h)
     
     #define fonts
-    top_font = ImageFont.truetype(os.path.join(pic_dir, 'Avenir Next.ttc'), 18, index=1)
-    bottom_font = ImageFont.truetype(os.path.join(pic_dir, 'Avenir Next.ttc'), 16, index=5)
+    top_font = ImageFont.truetype('Avenir Next.ttc', 18, index=1)
+    bottom_font = ImageFont.truetype( 'Avenir Next.ttc', 16, index=5)
     
     # define and draw background
     image = Image.new(mode='1', size=(w, h),color=255)
