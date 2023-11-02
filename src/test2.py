@@ -1,7 +1,7 @@
 import os
 import logging
 import epd7in5_V2
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 logging.basicConfig(level=logging.DEBUG)
 w = None
@@ -18,6 +18,7 @@ def create_image(epd_disp):
     global w, h
     w = epd_disp.height
     h = epd_disp.width
+    img = ImageOps.invert(img)  # invert colors
     return Image.new(mode='1', size=(w, h), color=255)
 
 def draw_text(image, text, position, font_path, font_size, font_index):
@@ -28,6 +29,7 @@ def draw_text(image, text, position, font_path, font_size, font_index):
 def add_image(image, image_path, position):
     img = Image.open(image_path)
     img.thumbnail((w,h))
+    img = img.convert('1')
     image.paste(img, position)
 
 def display_image(epd_disp, image):
