@@ -1,50 +1,47 @@
-# import required python libraries
 import os
-
 import logging
-# get display from Waveshare library
 import epd7in5_V2
-
-# get functions from Pillow
 from PIL import Image, ImageDraw, ImageFont
 
 logging.basicConfig(level=logging.DEBUG)
 
-try:
-    # initialize display
+def init_epd():
     epd_disp = epd7in5_V2.EPD()
     epd_disp.init()
-    
-    # clear display, 0 is black, 255 is white
+    return epd_disp
+
+def clear_epd(epd_disp):
     epd_disp.Clear()
-    
-    # reverse width and height as display is sideways
+
+def create_image(epd_disp):
     w = epd_disp.height
     h = epd_disp.width
-    print('width', w)
-    print('height', h)
-    
-    #define fonts
-    top_font = ImageFont.truetype('Avenir Next.ttc', 18, index=1)
-    bottom_font = ImageFont.truetype( 'Avenir Next.ttc', 16, index=5)
-    
-    # define and draw background
-    image = Image.new(mode='1', size=(w, h),color=255)
+    return Image.new(mode='1', size=(w, h), color=255)
+
+def draw_text(image, text, position, font_path, font_size, font_index):
     draw = ImageDraw.Draw(image)
-    
-    # position and draw text
-    draw.text((15, 0), 'Welcome to the Workshop!', font=top_font, fill=0, align='left')
-    draw.text((10, 150), 'https://dronebotworkshop.com', font=bottom_font, fill=0, align='left')
-    
-    # get robot image 
-    dbwsbot = Image.open('H_da_logo_sw.png')
-    
-    # paste image onto background image
-    image.paste(dbwsbot, (80, 35))
-    
-    # write buffer contents to display
+    font = ImageFont.truetype(font_path, font_size, index=font_index)
+    draw.text(position, text, font=font, fill=0, align='left')
+
+def add_image(image, image_path, position):
+    img = Image.open(image_path)
+    image.paste(img, position)
+
+def display_image(epd_disp, image):
     epd_disp.display(epd_disp.getbuffer(image))
     epd_disp.sleep()
-    
-except IOError as e:
-    print(e)
+
+def main():
+    try:
+        epd_disp = init_epd()
+        clear_epd(epd_disp)
+        image = create_image(epd_disp)
+        draw_text(image, 'Welcome to the Workshop!', (15, 0), 'Avenir Next.ttc', 18, 1)
+        draw_text(image, 'https://dronebotworkshop.com', (10, 150), 'Avenir Next.ttc', 16, 5)
+        add_image(image, 'H_da_logo_sw.png', (80, 35))
+        display_image(epd_disp, image)
+    except IOError as e:
+        print(e)
+
+if __name__ == "__main__":
+    main()
