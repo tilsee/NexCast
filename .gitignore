@@ -2,3 +2,5 @@
 .env
 epd7in5_V2.py
 epd7in5_V2.pyc
+epdconfig.pyc
+epdconfig.py
