@@ -37,7 +37,7 @@ try:
     draw.text((10, 150), 'https://dronebotworkshop.com', font=bottom_font, fill=0, align='left')
     
     # get robot image 
-    dbwsbot = Image.open('dbws-robot.bmp')
+    dbwsbot = Image.open('H_da_logo_sw.png')
     
     # paste image onto background image
     image.paste(dbwsbot, (80, 35))
