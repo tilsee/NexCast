@@ -17,7 +17,7 @@ def clear_epd(epd):
 
 def load_image(image_path, epd):
     image = Image.open(image_path)
-    image.thumbnail((epd.width, epd.height), Image.ANTIALIAS)
+    image.thumbnail((epd.width, epd.height))
     return image
 
 def display_image(epd, image):
