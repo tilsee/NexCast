@@ -15,4 +15,5 @@ However, if you're using a virtual environment, it's recommended to install seve
 
 ## Running the code
 
-To run the code in this repository, you'll need to copy the files **epd7in5_V2.py** and **epd7in5_V2.pyc** from the [Waveshare e-Paper](https://github.com/waveshareteam/e-Paper/tree/master) repository into the root directory of this repository. The path to the files is **RaspberryPi_JetsonNano/python/lib/waveshare_epd/**.
+To run the code in this repository, you'll need to copy the files **epdconfig.pyc**, 
+**epdconfig.py** **epd7in5_V2.py** and **epd7in5_V2.pyc** from the [Waveshare e-Paper](https://github.com/waveshareteam/e-Paper/tree/master) repository into the root directory of this repository. The path to the files is **RaspberryPi_JetsonNano/python/lib/waveshare_epd/**.
