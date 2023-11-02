@@ -4,7 +4,7 @@ import datetime
 
 logging.basicConfig(level=logging.DEBUG)
 
-DEBUG = False
+DEBUG = True
 # Define image dimensions
 width = 480
 height = 800
