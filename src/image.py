@@ -1,4 +1,4 @@
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 import logging
 import datetime
 
@@ -25,27 +25,30 @@ class WindowManager:
             self.draws[i].line((self.width/2, 0, self.width/2, self.width/2), fill='black', width=2)
             self.draws[i].line((0, self.width/2, self.width, self.width/2), fill='black', width=2)
 
-    def add_to_window(self, func, window_number):
-        func(self.imgs[window_number], self.draws[window_number])
-
-    def scale_and_add_image(self, input_img, window_number):
+    def add_to_window(self, input_img, window_number):
         # Scale image to fit window
         input_img.thumbnail((self.width, self.height))
         # Add image to window
         self.imgs[window_number].paste(input_img, (0, 0))
 
-def add_time(img, draw):
+def add_time():
     # Get current time
     now = datetime.datetime.now()
     time_string = now.strftime("%H:%M:%S")
     
+    # Create new image object
+    img = Image.new('RGB', (width, height), color='white')
+    draw = ImageDraw.Draw(img)
+    
     # Write time to top right corner
     draw.text((0, 10), time_string, fill='black')
+    
+    return img
 
 def main():
     wm = WindowManager(width, height)
     wm.create_window()
-    wm.add_to_window(add_time, 0)
+    wm.add_to_window(add_time(), 0)
     
     # Display image
     if not DEBUG :
