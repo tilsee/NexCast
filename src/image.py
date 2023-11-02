@@ -36,6 +36,13 @@ class FrameWithGrid:
             self.h_black_image.paste(img, (0, 240))
         else:
             raise ValueError("Invalid window number. Choose from 1, 2, or 3.")
+    
+    def refresh_display(self):
+        import epd7in5_V2
+        epd = epd7in5_V2. EPD()
+        epd.init ()
+        epd.display(epd.getbuffer(self.h_black_image))
+        epd.sleep()
 
     def save_frame(self, filename):
        self.h_black_image.save(filename)
@@ -78,6 +85,9 @@ if __name__ == "__main__":
     # Allocate images to specific windows
     frame.allocate_window(image2, window_number=2)
     frame.allocate_window(image3, window_number=3)
+
+    if True:
+        frame.refresh_display()
 
     # Save the frame
     frame.save_frame("output_frame.png")
