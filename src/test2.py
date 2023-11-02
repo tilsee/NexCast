@@ -1,6 +1,7 @@
 # import required python libraries
 import os
 
+import logging
 # get display from Waveshare library
 import epd7in5_V2
 
@@ -10,13 +11,15 @@ from PIL import Image, ImageDraw, ImageFont
 # image directory
 pic_dir = 'pic'
 
+logging.basicConfig(level=logging.DEBUG)
+
 try:
     # initialize display
     epd_disp = epd7in5_V2.EPD()
     epd_disp.init()
     
     # clear display, 0 is black, 255 is white
-    epd_disp.Clear(255)
+    epd_disp.Clear()
     
     # reverse width and height as display is sideways
     w = epd_disp.height
@@ -30,11 +33,11 @@ try:
     
     # define and draw background
     image = Image.new(mode='1', size=(w, h),color=255)
-    #draw = ImageDraw.Draw(image)
+    draw = ImageDraw.Draw(image)
     
     # position and draw text
-    #draw.text((15, 0), 'Welcome to the Workshop!', font=top_font, fill=0, align='left')
-    #draw.text((10, 150), 'https://dronebotworkshop.com', font=bottom_font, fill=0, align='left')
+    draw.text((15, 0), 'Welcome to the Workshop!', font=top_font, fill=0, align='left')
+    draw.text((10, 150), 'https://dronebotworkshop.com', font=bottom_font, fill=0, align='left')
     
     # get robot image 
     dbwsbot = Image.open('dbws-robot.bmp')
