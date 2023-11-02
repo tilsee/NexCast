@@ -1,19 +1,28 @@
-from PIL import ImageDraw, Image, ImageOps, ImageEnhance, ImageFont
+from PIL import Image, ImageDraw
+DEBUG = True
+# Define image dimensions
+width = 480
+height = 800
 
-from config import small_font_name, small_font_size, medium_font_name, medium_font_size, large_font_name, large_font_size
-import epd7in5_V2
+# Create new image object
+img = Image.new('RGB', (width, height), color='white')
 
-epd = epd7in5_V2.EPD()
-# epd.init()
+# Draw grid
+draw = ImageDraw.Draw(img)
+# Draw horizontal line
+draw.line((width/2, 0, width/2, width/2), fill='black', width=2)
+# Draw vertical line
+draw.line((0, width/2, width, width/2), fill='black', width=2)
 
-hight = epd7in5_V2.EPD_HEIGHT
-width = epd7in5_V2.EPD_WIDTH
+# save image
 
-h_black_image = Image.new('1', (hight, width), 255)
-draw_black = ImageDraw.Draw(h_black_image)
-
-#small_font = ImageFont.truetype(small_font_name, small_font_size)
-#medium_font = ImageFont.truetype(medium_font_name, medium_font_size)
-#large_font = ImageFont.truetype(large_font_name, large_font_size)
-
-print(hight, width)
+if not DEBUG :
+    # Display image
+    import epd7in5_V2
+    epd = epd7in5_V2.EPD()
+    epd.init()
+    epd.display(epd.getbuffer(img))
+    epd.sleep()
+else:
+    img.save('output_image.png')
+    print('Image saved to output_image.png')
