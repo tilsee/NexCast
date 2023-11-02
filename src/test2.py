@@ -4,7 +4,8 @@ import epd7in5_V2
 from PIL import Image, ImageDraw, ImageFont
 
 logging.basicConfig(level=logging.DEBUG)
-
+w = None
+h = None
 def init_epd():
     epd_disp = epd7in5_V2.EPD()
     epd_disp.init()
@@ -14,6 +15,7 @@ def clear_epd(epd_disp):
     epd_disp.Clear()
 
 def create_image(epd_disp):
+    global w, h
     w = epd_disp.height
     h = epd_disp.width
     return Image.new(mode='1', size=(w, h), color=255)
@@ -25,6 +27,7 @@ def draw_text(image, text, position, font_path, font_size, font_index):
 
 def add_image(image, image_path, position):
     img = Image.open(image_path)
+    img.thumbnail((w,h))
     image.paste(img, position)
 
 def display_image(epd_disp, image):
