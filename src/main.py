@@ -15,25 +15,27 @@ def init_epd():
 def clear_epd(epd):
     epd.Clear()
 
-def load_image(image_path):
-    return Image.open(image_path)
+def load_image(image_path, epd):
+    image = Image.open(image_path)
+    image.thumbnail((epd.width, epd.height), Image.ANTIALIAS)
+    return image
 
 def display_image(epd, image):
     epd.display(epd.getbuffer(image))
 
 def main():
     epd = init_epd()
-    img_sz = (epd.width, epd.height)
     try:
         logging.info("Clear...")
         epd.init()
         clear_epd(epd)
-        image = load_image('H_da_logo_sw.png', img_sz)
+        image = load_image('H_da_logo_sw.png', epd)
         display_image(epd, image)
     except KeyboardInterrupt:
         pass
     finally:
         logging.info("Goto Sleep...")
         epd.sleep()
+
 if __name__ == "__main__":
     main()
