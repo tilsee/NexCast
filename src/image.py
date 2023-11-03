@@ -125,7 +125,7 @@ if __name__ == "__main__":
     #frame.allocate_window(image2, window_number=2)
     #frame.allocate_window(image3, window_number=3)
 
-    if False:
+    if True:
         frame.refresh_display()
 
     # Save the frame
