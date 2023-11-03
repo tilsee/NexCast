@@ -15,14 +15,11 @@ class FrameWithGrid:
         self.draw_grid_lines()
 
     def draw_grid_lines(self):
-        # Draw horizontal grid lines
-        line_y = 240
-        while line_y < 800:
-            self.draw_black.line([(0, line_y), (480, line_y)], fill=0)
-            line_y += 80
-
+        # Draw horizontal grid line
+        self.draw_black.line([(240, 0), (240, 240)], fill=0)
         # Draw the line splitting the top section into two squares
         self.draw_black.line([(0, 240), (480, 240)], fill=0)
+        pass
 
     def allocate_window(self, img, window_number=None):
         if window_number is None:
@@ -51,17 +48,30 @@ class FrameWithGrid:
        self.h_black_image.save(filename)
        print("Frame saved to", filename)
 
-def print_date(width = 300, hight = 400):
-    h_black_image = Image.new('1', (width, hight), 255)
+def print_date(width = 240, height = 240):
+    h_black_image = Image.new('1', (width, height), 255)
     draw_date = ImageDraw.Draw(h_black_image)
     date = get_date()
-    w = draw_date.textlength(date['weekday'], font=large_font)
-    print(w)
-    draw_date.text((2, 2),
+
+    # Calculate the dimensions of the first text
+    text_width1 = draw_date.textlength(date['weekday'], font=large_font)
+    text_height1 = large_font_size
+    # Calculate the new coordinates to center the first text
+    x1_centered = (width - text_width1) // 2
+    y1_centered = (height - text_height1) // 2
+
+    # Calculate the dimensions of the second text
+    text_width2 = draw_date.textlength(months[date['month']] + ' ' + date['day'] + date_suffix[date['day']] + ' ' + date['year'], font=medium_font)
+    text_height2 = medium_font_size 
+    # Calculate the new coordinates to center the second text
+    x2_centered = (width - text_width2) // 2
+    y2_centered = (height - text_height2) // 2
+
+    draw_date.text((x1_centered-54, y1_centered-104),
 				  date['weekday'],
 				  font=large_font,
 				  fill=0)
-    draw_date.text((w + 7, 5),
+    draw_date.text((x2_centered+13, y2_centered-83),
 					months[date['month']] + ' ' + date['day'] + date_suffix[date['day']] + ' ' + date['year'],
 					font=medium_font,
 					fill=0)
@@ -88,6 +98,7 @@ if __name__ == "__main__":
     frame.allocate_window(time_image, window_number=1)
     frame.allocate_window(time_image, window_number=3)
     frame.allocate_window(time_image, window_number=2)
+    frame.draw_grid_lines()
 
     image2 = Image.open("dbws-robot.bmp")
     image3 = Image.open("dbws-robot.bmp")
