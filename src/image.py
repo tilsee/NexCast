@@ -48,7 +48,7 @@ class FrameWithGrid:
        self.h_black_image.save(filename)
        print("Frame saved to", filename)
 
-def print_date(width = 240, height = 240):
+def print_date(width=240, height=240, angle=12):
     h_black_image = Image.new('1', (width, height), 255)
     draw_date = ImageDraw.Draw(h_black_image)
     date = get_date()
@@ -56,27 +56,45 @@ def print_date(width = 240, height = 240):
     # Calculate the dimensions of the first text
     text_width1 = draw_date.textlength(date['weekday'], font=large_font)
     text_height1 = large_font_size
-    # Calculate the new coordinates to center the first text
-    x1_centered = (width - text_width1) // 2
-    y1_centered = (height - text_height1) // 2
 
     # Calculate the dimensions of the second text
     text_width2 = draw_date.textlength(months[date['month']] + ' ' + date['day'] + date_suffix[date['day']] + ' ' + date['year'], font=medium_font)
-    text_height2 = medium_font_size 
-    # Calculate the new coordinates to center the second text
-    x2_centered = (width - text_width2) // 2
-    y2_centered = (height - text_height2) // 2
+    text_height2 = medium_font_size
 
-    draw_date.text((x1_centered-54, y1_centered-104),
-				  date['weekday'],
-				  font=large_font,
-				  fill=0)
-    draw_date.text((x2_centered+13, y2_centered-83),
-					months[date['month']] + ' ' + date['day'] + date_suffix[date['day']] + ' ' + date['year'],
-					font=medium_font,
-					fill=0)
-    return h_black_image
-    
+    # Calculate the center of the image
+    center_x = width // 2
+    center_y = height // 2
+
+    # Calculate the new coordinates to center the texts
+    x1_centered = center_x - text_width1 / 2
+    y1_centered = center_y - text_height1 / 2
+
+    x2_centered = center_x - text_width2 / 2
+    y2_centered = center_y - text_height2 / 2
+
+    # Create a new image to group the texts
+    grouped_image = Image.new('1', (width, height), 255)
+    draw_group = ImageDraw.Draw(grouped_image)
+
+    # Draw the first text on the grouped image
+    draw_group.text((x1_centered-54, y1_centered-104),
+                    date['weekday'],
+                    font=large_font,
+                    fill=0)
+
+    # Draw the second text on the grouped image
+    draw_group.text((x2_centered-13, y2_centered-83),
+                    months[date['month']] + ' ' + date['day'] + date_suffix[date['day']] + ' ' + date['year'],
+                    font=medium_font,
+                    fill=0)
+
+    # Rotate the grouped image
+    rotated_grouped_image = grouped_image.rotate(angle, expand=True)
+
+    # Paste the rotated grouped image onto the original image
+    h_black_image.paste(rotated_grouped_image, (0, 0))
+
+    return h_black_image    
 
 def get_date():
 	now = datetime.datetime.now()
