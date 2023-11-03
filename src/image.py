@@ -1,9 +1,12 @@
 from PIL import Image, ImageDraw, ImageFont
 import datetime
-small_font_name = "Freedom-10eM.ttf"
-small_font = ImageFont.truetype(small_font_name, 14)
-medium_font = ImageFont.truetype(small_font_name, 14)
-large_font = ImageFont.truetype(small_font_name, 14)
+from config import small_font_name, small_font_size, medium_font_name, medium_font_size, large_font_name, large_font_size
+from Dictionaries import months, date_suffix, weekdays
+
+small_font = ImageFont.truetype(small_font_name, small_font_size)
+medium_font = ImageFont.truetype(medium_font_name, medium_font_size)
+large_font = ImageFont.truetype(large_font_name, large_font_size)
+
 
 class FrameWithGrid:
     def __init__(self):
@@ -48,26 +51,33 @@ class FrameWithGrid:
        self.h_black_image.save(filename)
        print("Frame saved to", filename)
 
+from PIL import Image, ImageDraw, ImageFont
+import datetime
+
+def print_date():
+    h_black_image = Image.new('1', (240, 240), 255)
+    draw_date = ImageDraw.Draw(h_black_image)
+    date = get_date()
+    w = draw_date.textlength(date['weekday'], font=large_font)
+    draw_date.text((2, 2),
+				  date['weekday'],
+				  font=large_font,
+				  fill=0)
+    draw_date.text((w + 7, 5),
+					months[date['month']] + ' ' + date['day'] + date_suffix[date['day']] + ' ' + date['year'],
+					font=medium_font,
+					fill=0)
+    return h_black_image
+    
+
 def get_date():
 	now = datetime.datetime.now()
 	return {
-		'weekday': now.isoweekday(),
+		'weekday': weekdays[str(now.isoweekday())],
 		'day': str(now.day),
 		'month': str(now.month),
 		'year': str(now.year)
 	}
-
-def print_date():
-    date = get_date()
-    h_black_image = Image.new('1', (240, 240), 255)
-    draw_black = ImageDraw.Draw(h_black_image)
-    w=20
-    draw_black.text((w + 7, 5),
-					date['month'] + ' ' + date['day'] + date['day'] + ' ' + date['year'],
-					font=medium_font,
-					fill=0)
-    return h_black_image
-
 
 # Example usage:
 if __name__ == "__main__":
@@ -86,7 +96,7 @@ if __name__ == "__main__":
     frame.allocate_window(image2, window_number=2)
     frame.allocate_window(image3, window_number=3)
 
-    if True:
+    if False:
         frame.refresh_display()
 
     # Save the frame
