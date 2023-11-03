@@ -51,14 +51,12 @@ class FrameWithGrid:
        self.h_black_image.save(filename)
        print("Frame saved to", filename)
 
-from PIL import Image, ImageDraw, ImageFont
-import datetime
-
-def print_date():
-    h_black_image = Image.new('1', (240, 240), 255)
+def print_date(width = 300, hight = 400):
+    h_black_image = Image.new('1', (width, hight), 255)
     draw_date = ImageDraw.Draw(h_black_image)
     date = get_date()
     w = draw_date.textlength(date['weekday'], font=large_font)
+    print(w)
     draw_date.text((2, 2),
 				  date['weekday'],
 				  font=large_font,
@@ -88,13 +86,15 @@ if __name__ == "__main__":
 
     # Allocate the time image to window 1
     frame.allocate_window(time_image, window_number=1)
+    frame.allocate_window(time_image, window_number=3)
+    frame.allocate_window(time_image, window_number=2)
 
     image2 = Image.open("dbws-robot.bmp")
     image3 = Image.open("dbws-robot.bmp")
 
     # Allocate images to specific windows
-    frame.allocate_window(image2, window_number=2)
-    frame.allocate_window(image3, window_number=3)
+    #frame.allocate_window(image2, window_number=2)
+    #frame.allocate_window(image3, window_number=3)
 
     if False:
         frame.refresh_display()
