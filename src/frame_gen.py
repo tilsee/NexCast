@@ -58,7 +58,7 @@ def create_image():
         y_position += large_font_size + medium_font_size + 4  # Add a small buffer after each to-do item
 
     # Save or display the image
-    img.show()
+    return img
     # img.save('/path/to/save/image/output_image.bmp')
 
 if __name__ == '__main__':
