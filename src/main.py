@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 import os
 import logging
-import epd7in5_V2
+import lib.epd7in5_V2
 from PIL import Image
 
 logging.basicConfig(level=logging.DEBUG)

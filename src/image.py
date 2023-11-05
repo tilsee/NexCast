@@ -1,6 +1,6 @@
 from PIL import Image, ImageDraw, ImageFont
 import datetime
-from config import small_font_name, small_font_size, medium_font_name, medium_font_size, large_font_name, large_font_size
+from config import small_font_name, small_font_size, medium_font_name, medium_font_size, large_font_name, large_font_size, debug
 from Dictionaries import months, date_suffix, weekdays
 
 small_font = ImageFont.truetype(small_font_name, small_font_size)
@@ -38,7 +38,7 @@ class FrameWithGrid:
             raise ValueError("Invalid window number. Choose from 1, 2, or 3.")
     
     def refresh_display(self):
-        import epd7in5_V2
+        from lib import epd7in5_V2
         epd = epd7in5_V2. EPD()
         epd.init ()
         epd.display(epd.getbuffer(self.h_black_image))
@@ -118,14 +118,14 @@ if __name__ == "__main__":
     frame.allocate_window(time_image, window_number=2)
     frame.draw_grid_lines()
 
-    image2 = Image.open("dbws-robot.bmp")
-    image3 = Image.open("dbws-robot.bmp")
+    image2 = Image.open("assets/dbws-robot.bmp")
+    image3 = Image.open("assets/dbws-robot.bmp")
 
     # Allocate images to specific windows
     #frame.allocate_window(image2, window_number=2)
     #frame.allocate_window(image3, window_number=3)
 
-    if True:
+    if False:
         frame.refresh_display()
 
     # Save the frame
