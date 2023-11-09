@@ -1,9 +1,10 @@
 import caldav
 from caldav.elements import dav, cdav
-from datetime import datetime
+from datetime import datetime, timedelta
 from icalendar import Calendar
 from dotenv import load_dotenv
 import os
+from dateutil import tz
 
 # load the environment variables from .env
 load_dotenv()
@@ -57,43 +58,53 @@ def get_todos():
         print(f"Calendar '{calendar_name}' not found")
     return todos_list
 
-def fetch_calendar_entries(start_date_str='2023-11-01', end_date_str='2023-11-03'):
+def fetch_calendar_entries(start_date_str=None, end_date_str=None):
+    # Define local timezone
+    local_tz = tz.tzlocal()
+
+    if start_date_str is None:
+        start_date_str = datetime.now().strftime('%Y-%m-%d')
+    if end_date_str is None:
+        end_date_str = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+    
     # Convert string to datetime
     start_date = datetime.strptime(start_date_str, '%Y-%m-%d')
     end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
 
     entries_list = []
-    # Get ignored calendars from environment variable
     ignored_calendars = os.getenv('IGNORED_CALENDARS', '').split(',')
 
     for calendar in calendars:
-        # Skip ignored calendars
         if calendar.name in ignored_calendars:
             continue
 
-        # Fetch events within the specified time frame
         events = calendar.date_search(start_date, end_date)
 
         for event in events:
             icalendar = Calendar.from_ical(event.data)
             for component in icalendar.walk():
                 if component.name == "VEVENT":
-                    start_date_event = component.get('dtstart')
-                    end_date_event = component.get('dtend')
+                    start_date_event = component.get('dtstart').dt
+                    end_date_event = component.get('dtend').dt
                     summary = component.get('summary')
                     description = component.get('description')
-                    # Convert to datetime and then to string
+
+                    # Convert to local time zone
                     if start_date_event is not None:
-                        start_date_event = start_date_event.dt.strftime('%Y-%m-%d %H:%M:%S')
+                        start_date_event = start_date_event.replace(tzinfo=tz.tzutc()).astimezone(local_tz)
+                        start_date_event = start_date_event.strftime('%Y-%m-%d %H:%M:%S')
                     if end_date_event is not None:
-                        end_date_event = end_date_event.dt.strftime('%Y-%m-%d %H:%M:%S')
+                        end_date_event = end_date_event.replace(tzinfo=tz.tzutc()).astimezone(local_tz)
+                        end_date_event = end_date_event.strftime('%Y-%m-%d %H:%M:%S')
+                    
                     entries_list.append({
                         'calendar': calendar.name,
                         'summary': str(summary),
                         'description': str(description),
-                        'start_date': start_date_event,
+                        'due': start_date_event,
                         'end_date': end_date_event
                     })
+    entries_list = sorted(entries_list, key=lambda x: x['due'])
     return entries_list
 
 def print_calendar_names():

@@ -1,5 +1,5 @@
 import frame_gen
-from lib import lib.epd7in5_V2
+from lib import epd7in5_V2
 epd = epd7in5_V2.EPD()
 epd.init()
 
