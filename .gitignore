@@ -8,3 +8,6 @@ src/__pycache__/
 src/pic/
 demo.py
 *.png
+*.ipynb
+*.csv
+*.sqlite
