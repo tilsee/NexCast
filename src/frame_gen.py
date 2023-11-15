@@ -3,7 +3,6 @@ from datetime import datetime
 import weather
 import get_nextcloud_dat
 from config import small_font_name, small_font_size, medium_font_name, medium_font_size, large_font_name, large_font_size, debug
-from Dictionaries import months, date_suffix, weekdays
 import weather
 import date
 small_font = ImageFont.truetype(small_font_name, small_font_size)
