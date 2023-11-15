@@ -28,19 +28,31 @@ def paste_weather_data(img):
     img.paste(weather_img, (0, weather_y_start))
     return img
 
+def str_len_5_conv(string):
+    if len(string) >= 5:
+        return string[:5]
+    else:
+        str_len_diff = 5-len(string)
+        string = string + ' '*str_len_diff*7
+        return string
+
 def draw_todo_items(d, nextcloud_data):
     y_position = 260
     i = 1
     for todo in nextcloud_data:
         summary = todo['summary'][:20]
+        calendar_name = str_len_5_conv(todo['calendar'])
         try:
             due = datetime.strptime(todo['due'], '%Y-%m-%d %H:%M:%S')
             due_time = due.strftime("%H:%M")
         except:  due = due_time = ''
-        todo_txt = f'{i}. {summary}'
+        d.text((0, y_position), str(i)+'.', font=large_font, fill=0)
+        d.text((25, y_position), calendar_name, font=large_font, fill=0)
+        d.text((115, y_position), ': '+summary, font=large_font, fill=0)
+        #todo_txt = f'{i}. {calendar_name}: {summary}'
         i += 1
-        d.text((10, y_position), todo_txt, font=large_font, fill=0)
-        text_width = d.textlength(todo_txt, font=large_font)
+        #d.text((10, y_position), todo_txt, font=large_font, fill=0)
+        #text_width = d.textlength(todo_txt, font=large_font)
         x_time = 400
         d.text((x_time, y_position+5), due_time, font=medium_font, fill=0)
         y_hline = y_position

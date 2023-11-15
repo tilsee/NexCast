@@ -7,6 +7,7 @@ import requests_cache
 from retry_requests import retry
 from io import BytesIO
 from PIL import Image
+from datetime import datetime, timedelta
 
 
 def get_weather():
@@ -20,25 +21,23 @@ def get_weather():
         "latitude": 49.861,
         "longitude": 8.6532,
         "current": ["temperature_2m", "precipitation"],
-        "minutely_15": ["temperature_2m", "precipitation"],
-        "hourly": ["temperature_2m", "precipitation"],
+        "minutely_15": ["temperature_2m", "precipitation", "weather_code"],
+        "hourly": ["temperature_2m", "precipitation", "weather_code"],
         "timezone": "Europe/Berlin",
         "forecast_days": 3,
         "models": "best_match"
     }
     responses = openmeteo.weather_api(url, params=params)
-
     response = responses[0]
 
-
-    hourly = response.Hourly()
-    hourly_temperature_2m = hourly.Variables(0).ValuesAsNumpy()
-    hourly_precipitation = hourly.Variables(1).ValuesAsNumpy()
+    data = response.Minutely15()
+    hourly_temperature_2m = data.Variables(0).ValuesAsNumpy()
+    hourly_precipitation = data.Variables(1).ValuesAsNumpy()
 
     hourly_data = {"date": pd.date_range(
-        start = pd.to_datetime(hourly.Time(), unit = "s"),
-        end = pd.to_datetime(hourly.TimeEnd(), unit = "s"),
-        freq = pd.Timedelta(seconds = hourly.Interval()),
+        start = pd.to_datetime (data.Time(), unit = "s"),
+        end = pd.to_datetime (data.TimeEnd(), unit = "s"),
+        freq = pd.Timedelta(seconds = data.Interval()),
         inclusive = "left"
     )}
     hourly_data["temperature_2m"] = hourly_temperature_2m
@@ -51,6 +50,15 @@ def get_next_24h_weather_data():
     hourly_dataframe['date'] = pd.to_datetime(hourly_dataframe['date'])
     current_time = pd.Timestamp.now().floor('H')
     mask = (hourly_dataframe['date'] >= current_time) & (hourly_dataframe['date'] < current_time + pd.Timedelta(hours=24))
+    print(hourly_dataframe.columns)
+    return hourly_dataframe.loc[mask]
+
+def get_next_24h_weather_data_json():
+    hourly_dataframe = get_weather()  # Ensure this returns a DataFrame.
+    hourly_dataframe['date'] = pd.to_datetime(hourly_dataframe['date'])
+    current_time = pd.Timestamp.now().floor('H')
+    mask = (hourly_dataframe['date'] >= current_time) & (hourly_dataframe['date'] < current_time + pd.Timedelta(hours=24))
+    print(hourly_dataframe.columns)
     return hourly_dataframe.loc[mask]
 
 def customize_plot(ax):
@@ -66,6 +74,9 @@ def annotate_max_values(ax, data, column, color, max_value, xytext_offset):
         ax.annotate(f'{str(round(max_value,2))}', xy=(max_date, max_value), xytext=xytext_offset, 
                     textcoords='offset points', ha='center', color=color)
 
+def get_icon(data):
+    pass
+
 def plot_weather():
     frame_width, frame_height = (480, 150)
     next_24h_data = get_next_24h_weather_data()
@@ -77,8 +88,10 @@ def plot_weather():
     customize_plot(ax1)
 
     ax1.bar(next_24h_data['date'], next_24h_data['precipitation'], color='black', width=0.03)
+    ax1.set_ylim(bottom=0)
     ax2 = ax1.twinx()
     ax2.plot(next_24h_data['date'], next_24h_data['temperature_2m'], color='grey')
+    ax2.set_ylim(bottom=0)
     customize_plot(ax2)
 
     max_precipitation_value = next_24h_data['precipitation'].max()
