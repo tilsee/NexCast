@@ -7,3 +7,4 @@ epdconfig.py
 src/__pycache__/
 src/pic/
 demo.py
+*.png
