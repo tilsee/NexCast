@@ -4,6 +4,8 @@ This project has the goal to create a smart e-paper display to display a To-Do L
 In the first poc a raspberry pi 2b is used as well as a 7.5inch ePaper screen from [waveshare](https://www.waveshare.com/product/7.5inch-e-paper-hat.htm
 )
 
+This project was partly inspired by [zoharsf](https://github.com/zoharsf/Raspberry-Pi-E-Ink-Dashboard)
+
 # Getting started
 
 ## Installation
