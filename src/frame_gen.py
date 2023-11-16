@@ -65,6 +65,7 @@ def create_image():
     img = paste_weather_data(img)
     d = draw_todo_items(d, get_nextcloud_dat.fetch_calendar_entries())
     return img
+
 if __name__ == '__main__':
     img = create_image()
     img.show()

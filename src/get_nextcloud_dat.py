@@ -2,18 +2,12 @@ import caldav
 from caldav.elements import dav, cdav
 from datetime import datetime, timedelta
 from icalendar import Calendar
-from dotenv import load_dotenv
-import os
+from config import username, password, caldav_url, IGNORED_CALENDARS
 from dateutil import tz
 
-# load the environment variables from .env
-load_dotenv()
 
 # Set up the client
-url = os.getenv('url')
-username = os.getenv('username')
-password = os.getenv('password')
-client = caldav.DAVClient(url=url, username=username, password=password)
+client = caldav.DAVClient(url=caldav_url, username=username, password=password)
 
 # Find the calendar
 principal = client.principal()
@@ -72,7 +66,7 @@ def fetch_calendar_entries(start_date_str=None, end_date_str=None):
     end_date = datetime.strptime(end_date_str, '%Y-%m-%d')
 
     entries_list = []
-    ignored_calendars = os.getenv('IGNORED_CALENDARS', '').split(',')
+    ignored_calendars = IGNORED_CALENDARS.split(',')
 
     for calendar in calendars:
         if calendar.name in ignored_calendars:
