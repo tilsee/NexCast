@@ -5,6 +5,15 @@ import get_nextcloud_dat
 from config import small_font_name, small_font_size, medium_font_name, medium_font_size, large_font_name, large_font_size, debug
 import weather
 import date
+import sys
+import os
+
+# Get the directory of the current script
+script_directory = os.path.dirname(os.path.abspath(__file__))
+
+# Add the script directory to the Python path
+sys.path.append(script_directory)
+
 small_font = ImageFont.truetype(small_font_name, small_font_size)
 medium_font = ImageFont.truetype(medium_font_name, medium_font_size)
 large_font = ImageFont.truetype(large_font_name, large_font_size)

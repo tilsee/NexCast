@@ -5,6 +5,15 @@ from PIL import Image
 from datetime import datetime, timedelta
 import requests
 from config import open_meteo_url
+import sys
+import os
+
+# Get the directory of the current script
+script_directory = os.path.dirname(os.path.abspath(__file__))
+
+# Add the script directory to the Python path
+sys.path.append(script_directory)
+
 
 def get_weather():
     url = open_meteo_url
