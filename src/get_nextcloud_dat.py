@@ -1,6 +1,5 @@
 import caldav
-from caldav.elements import dav, cdav
-from datetime import datetime, timedelta, time
+from datetime import datetime, timedelta
 from icalendar import Calendar
 from config import username, password, caldav_url, IGNORED_CALENDARS
 from dateutil import tz
@@ -19,45 +18,14 @@ def get_calendars():
     calendars = principal.calendars()
     return calendars
 
-# def get_todos():
-#     todos_list = []
-#     if calendar is not None:
-#         todos = calendar.todos()
-#         for todo in todos:
-#             icalendar = Calendar.from_ical(todo.data)
-#             for component in icalendar.walk():
-#                 if component.name == "VTODO":
-#                     start_date = component.get('dtstart')
-#                     due_date = component.get('due')
-#                     completed_date = component.get('completed')
-#                     # Convert to datetime and then to string
-#                     if start_date is not None:
-#                         start_date = start_date.dt.strftime('%Y-%m-%d %H:%M:%S')
-#                     if due_date is not None:
-#                         due_date = due_date.dt.strftime('%Y-%m-%d %H:%M:%S')
-#                     if completed_date is not None:
-#                         completed_date = completed_date.dt.strftime('%Y-%m-%d %H:%M:%S')
-#                     todos_list.append({
-#                         'summary': str(component.get('summary')),
-#                         'status': str(component.get('status')),
-#                         'description': str(component.get('description')),
-#                         'due': due_date,
-#                         'start_date': start_date,
-#                         'priority': str(component.get('priority')),
-#                         'completed_date': completed_date
-#                     })
-#     else:
-#         print(f"Calendar '{calendar_name}' not found")
-#     return todos_list
-
-def fetch_calendar_entries(start_date_str=None, end_date_str=None):
+def fetch_calendar_entries(start_date_str=None, end_date_str=None, now=None):
     # Define local timezone
     local_tz = tz.tzlocal()
 
     if start_date_str is None:
-        start_date_str = datetime.now().strftime('%Y-%m-%d')
+        start_date_str = now.strftime('%Y-%m-%d')
     if end_date_str is None:
-        end_date_str = (datetime.now() + timedelta(days=2)).strftime('%Y-%m-%d')
+        end_date_str = (now + timedelta(days=2)).strftime('%Y-%m-%d')
     
     calendars = get_calendars()
     

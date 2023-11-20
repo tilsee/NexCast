@@ -7,6 +7,7 @@ import requests
 from config import open_meteo_url
 import sys
 import os
+from PIL import Image
 
 # Get the directory of the current script
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -15,15 +16,14 @@ script_directory = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(script_directory)
 
 
-def get_weather():
+def get_weather(now = None):
     url = open_meteo_url
     response = requests.get(url)
     data = response.json()['minutely_15']
     output_data = {}
-    now = datetime.now()
     for i in range(len(data['temperature_2m'])):
         time = datetime.fromisoformat(data['time'][i])
-        if time > now and time < now + timedelta(hours=24):
+        if time > now.replace(tzinfo=None) and time < now.replace(tzinfo=None) + timedelta(hours=24):
             output_data[time] = { 'temperature': data['temperature_2m'][i], 'percipitation': data['precipitation'][i] }
     return output_data
 
@@ -44,12 +44,41 @@ def annotate_max_values(ax, data, color, max_value, xytext_offset):
         ax.annotate(f'{str(round(max_value,2))}', xy=(max_date, max_value), xytext=xytext_offset, 
                     textcoords='offset points', ha='center', color=color)
         
-def get_icon(data):
-    pass
+def will_it_rain(weather_data, start_time, end_time):
+    rain_status = 0
+    if type(start_time) == str:
+        start_time = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
+    if type(end_time) == str:
+        end_time = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
+    
+    for date_key in weather_data:
+        if start_time <= date_key <= end_time:
+            if weather_data[date_key]['percipitation'] > 0:
+                rain_status = 1
+                break
+    return rain_status
 
-def plot_weather():
+def get_icon(startTime, endTime, weather_data):
+    res = will_it_rain(weather_data, startTime, endTime)
+
+    # Load the image
+    image = Image.open("lib/umbrella.png").convert('RGBA')
+
+    # Separate the alpha channel from the RGB channels
+    rgb_image = image.convert('RGB')
+
+    # Convert the RGB image to black and white
+    bw_image = rgb_image.convert('L').point(lambda x: 0 if x<128 else 255, '1')
+
+    resized_image = bw_image.resize((20, 20))
+    if res == 1 : 
+        return resized_image
+    else: return None
+    
+    
+
+def plot_weather(next_24h_data=None):
     frame_width, frame_height = (480, 150)
-    next_24h_data = get_weather()
     dates = list(next_24h_data.keys())
     percipitation = [next_24h_data[date]['percipitation'] for date in dates]
     temperature = [next_24h_data[date]['temperature'] for date in dates]

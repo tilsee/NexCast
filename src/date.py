@@ -3,8 +3,7 @@ from PIL import Image, ImageDraw, ImageFont
 from Dictionaries import months, date_suffix, weekdays
 from config import small_font_name, small_font_size, medium_font_name, medium_font_size, large_font_name, large_font_size, debug
 
-def get_date():
-    now = datetime.now()
+def get_date(now=None):
     day_suffix = date_suffix.get(str(now.day), 'th')
     return {
         'weekday': weekdays[str(now.isoweekday())],
@@ -14,18 +13,17 @@ def get_date():
         'day_suffix': day_suffix
     }
     
-def print_date(width=240, height=240, angle=0, large_font_size=20, medium_font_size=15):
+def print_date(width=240, height=240, angle=0, large_font_size=20, medium_font_size=15, now=None):
     # Create the date image and draw object
     h_black_image = Image.new('1', (width, height), 255)
     draw_date = ImageDraw.Draw(h_black_image)
-    date = get_date()
+    date = get_date(now)
 
     # Use your font configurations
     large_font = ImageFont.truetype(large_font_name, large_font_size)
     medium_font = ImageFont.truetype(medium_font_name, medium_font_size)
     h_black_image = Image.new('1', (width, height), 255)
     draw_date = ImageDraw.Draw(h_black_image)
-    date = get_date()
 
     # Calculate the dimensions of the first text
     text_width1 = draw_date.textlength(date['weekday'], font=large_font)

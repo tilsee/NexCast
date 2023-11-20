@@ -7,6 +7,7 @@ import weather
 import date
 import sys
 import os
+from dateutil import tz
 
 # Get the directory of the current script
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -25,13 +26,13 @@ def create_base_image():
     d = ImageDraw.Draw(img)
     return img, d
 
-def paste_date_section(img):
-    date_image = date.print_date()
+def paste_date_section(img, now):
+    date_image = date.print_date(now = now)
     img.paste(date_image, (0, 0))  # Adjust the position as necessary
     return img
 
-def paste_weather_data(img):
-    weather_img, max_precip, max_temp = weather.plot_weather()
+def paste_weather_data(img, weather_data):
+    weather_img, max_precip, max_temp = weather.plot_weather(weather_data)
     weather_y_start = 100
     img.paste(weather_img, (0, weather_y_start))
     return img
@@ -44,35 +45,46 @@ def str_len_5_conv(string):
         string = string + ' '*str_len_diff*7
         return string
 
-def draw_todo_items(d, nextcloud_data):
+def draw_todo_items(d, img, nextcloud_data, weather_data):
     y_position = 260
     i = 1
     for todo in nextcloud_data:
-        summary = todo['summary'][:20]
+        summary = todo['summary'][:10]
         calendar_name = str_len_5_conv(todo['calendar'])
         try:
-            due = datetime.strptime(todo['due'], '%Y-%m-%d %H:%M:%S')
+            tstart = todo['due']
+            tend = todo['end_date']
+            due = datetime.strptime(tstart, '%Y-%m-%d %H:%M:%S')
             due_time = due.strftime("%H:%M")
         except:  due = due_time = ''
+
+        icon = weather.get_icon(tstart, tend, weather_data)
         d.text((0, y_position), str(i)+'.', font=large_font, fill=0)
         d.text((25, y_position), calendar_name, font=large_font, fill=0)
         d.text((115, y_position), ': '+summary, font=large_font, fill=0)
-        #todo_txt = f'{i}. {calendar_name}: {summary}'
         i += 1
-        #d.text((10, y_position), todo_txt, font=large_font, fill=0)
-        #text_width = d.textlength(todo_txt, font=large_font)
         x_time = 400
         d.text((x_time, y_position+5), due_time, font=medium_font, fill=0)
+        if icon is not None:
+            icon = icon.convert("1") 
+            img.paste(icon, (x_time-20, y_position+5))
         y_hline = y_position
         d.line((0, y_hline, 480, y_hline), fill=0)
         y_position += large_font_size + 8  # Add a small buffer after each to-do item
     return d
 
 def create_image():
+    local_tz = tz.tzlocal()
+    # get data:
+    now = datetime.now(tz=local_tz)
+    calendars = get_nextcloud_dat.fetch_calendar_entries(now = now)
+    weather_data = weather.get_weather(now)
+
+    # create image:
     img, d = create_base_image()
-    img = paste_date_section(img)
-    img = paste_weather_data(img)
-    d = draw_todo_items(d, get_nextcloud_dat.fetch_calendar_entries())
+    img = paste_date_section(img, now)
+    img = paste_weather_data(img, weather_data)
+    d = draw_todo_items(d, img, calendars, weather_data)
     return img
 
 if __name__ == '__main__':
