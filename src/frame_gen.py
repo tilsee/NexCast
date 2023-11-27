@@ -2,7 +2,7 @@ from PIL import Image, ImageDraw, ImageFont
 from datetime import datetime
 import weather
 import get_nextcloud_dat
-from config import small_font_name, small_font_size, medium_font_name, medium_font_size, large_font_name, large_font_size, debug
+from config import small_font_name, small_font_size, medium_font_name, medium_font_size, large_font_name, large_font_size, debug, ical_urls
 import weather
 import date
 import sys
@@ -60,7 +60,7 @@ def draw_todo_items(d, img, nextcloud_data, weather_data):
 
         icon = weather.get_icon(tstart, tend, weather_data)
         d.text((0, y_position), str(i)+'.', font=large_font, fill=0)
-        d.text((25, y_position), calendar_name, font=large_font, fill=0)
+        d.text((30, y_position), calendar_name, font=large_font, fill=0)
         d.text((115, y_position), ': '+summary, font=large_font, fill=0)
         i += 1
         x_time = 400
@@ -73,17 +73,25 @@ def draw_todo_items(d, img, nextcloud_data, weather_data):
         y_position += large_font_size + 8  # Add a small buffer after each to-do item
     return d
 
+def add_current_time(d, now):
+    current_time = now.strftime("%H:%M")
+    time_width= d.textlength(current_time, font=large_font)
+    x_position = 480 - time_width
+    d.text((x_position, 0), current_time, font=large_font, fill=0)
+    return d
+
 def create_image():
     local_tz = tz.tzlocal()
     # get data:
     now = datetime.now(tz=local_tz)
-    calendars = get_nextcloud_dat.fetch_calendar_entries(now = now)
+    calendars = get_nextcloud_dat.fetch_all_events(now = now, ical_urls=ical_urls)
     weather_data = weather.get_weather(now)
 
     # create image:
     img, d = create_base_image()
     img = paste_date_section(img, now)
     img = paste_weather_data(img, weather_data)
+    d = add_current_time(d, now)
     d = draw_todo_items(d, img, calendars, weather_data)
     return img
 

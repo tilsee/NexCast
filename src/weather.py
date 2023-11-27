@@ -74,8 +74,7 @@ def get_icon(startTime, endTime, weather_data):
     if res == 1 : 
         return resized_image
     else: return None
-    
-    
+
 
 def plot_weather(next_24h_data=None):
     frame_width, frame_height = (480, 150)
@@ -91,9 +90,12 @@ def plot_weather(next_24h_data=None):
 
     ax1.bar(dates, percipitation, color='black', width=0.03)
     ax1.set_ylim(bottom=0)
+    ax1.set_xlim([min(dates), max(dates)])  # Set x-axis limits
+
     ax2 = ax1.twinx()
     ax2.plot(dates, temperature, color='grey')
     ax2.set_ylim(bottom=0)
+    ax2.set_xlim([min(dates), max(dates)])  # Set x-axis limits
     customize_plot(ax2)
 
     max_precipitation_value = max(percipitation)
@@ -109,4 +111,5 @@ def plot_weather(next_24h_data=None):
     fig.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
     buf.seek(0)
     plot_image_pil = Image.open(buf).resize((frame_width, frame_height))
+
     return plot_image_pil, max_precipitation_value, max_temperature_value
