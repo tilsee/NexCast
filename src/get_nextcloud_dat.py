@@ -163,12 +163,12 @@ def print_calendar_names(principal):
     for calendar in calendars:
         print(calendar.name)
 
-# if __name__ == '__main__':
-#     local_tz = tz.tzlocal()
-#     # get data:
-#     now = datetime.now(tz=local_tz)
+if __name__ == '__main__':
+    local_tz = tz.tzlocal()
+    # get data:
+    now = datetime.now(tz=local_tz)
 
-#     results = fetch_all_events(now=now, ical_urls=["https://obs.fbi.h-da.de/obs/service.php?action=getPersPlanAbo&lfkey=31dcbbef4835595bbd8d5b80dec45b9677c4ac2bba5516fb92ac5834c67de5d9e1adb098a86f0e36"])
-#     for todo in results:
-#         print(todo['summary'])
-#         print(todo['due'])
+    results = fetch_all_events(now=now, ical_urls=["https://obs.fbi.h-da.de/obs/service.php?action=getPersPlanAbo&lfkey=31dcbbef4835595bbd8d5b80dec45b9677c4ac2bba5516fb92ac5834c67de5d9e1adb098a86f0e36"])
+    for todo in results:
+        print(todo['summary'])
+        print(todo['due'])

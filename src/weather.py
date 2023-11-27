@@ -75,7 +75,6 @@ def get_icon(startTime, endTime, weather_data):
         return resized_image
     else: return None
 
-
 def plot_weather(next_24h_data=None):
     frame_width, frame_height = (480, 150)
     dates = list(next_24h_data.keys())
