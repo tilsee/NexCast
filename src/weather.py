@@ -8,6 +8,7 @@ from config import open_meteo_url
 import sys
 import os
 from PIL import Image
+import matplotlib
 
 # Get the directory of the current script
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -34,14 +35,17 @@ def customize_plot(ax):
     ax.tick_params(axis='y', which='both', left=False, labelleft=False, right=False, labelright=False)
     ax.xaxis.set_major_formatter(DateFormatter('%H'))
 
-def annotate_max_values(ax, data, color, max_value, xytext_offset):
+def annotate_max_values(ax, data, color, max_value, xytext_offset, unit=''):
     max_date = None
     for date, value in data.items():
         if value == max_value:
             max_date = date
             break
-    if max_date is not None and max_value is not None:
-        ax.annotate(f'{str(round(max_value,2))}', xy=(max_date, max_value), xytext=xytext_offset, 
+    if max_date is not None and max_value is not None and max_value > 0:
+        max_date_float = matplotlib.dates.date2num(max_date)  # Convert max_date to float
+        if max_date_float > ax.get_xlim()[1] - ax.get_xlim()[0]:
+            xytext_offset = (xytext_offset[0] * -1, xytext_offset[1])
+        ax.annotate(f'{str(round(max_value,2))+ unit}', xy=(max_date, max_value), xytext=xytext_offset, 
                     textcoords='offset points', ha='center', color=color)
         
 def will_it_rain(weather_data, start_time, end_time):
@@ -93,15 +97,15 @@ def plot_weather(next_24h_data=None):
 
     ax2 = ax1.twinx()
     ax2.plot(dates, temperature, color='grey')
-    ax2.set_ylim(bottom=0)
     ax2.set_xlim([min(dates), max(dates)])  # Set x-axis limits
+    ax2.axhline(0, color='blue', linewidth=0.5)  # Add horizontal line at zero degrees
     customize_plot(ax2)
 
     max_precipitation_value = max(percipitation)
     max_temperature_value = max(temperature)
 
-    annotate_max_values(ax1, dict(zip(dates,percipitation)), 'black', max_precipitation_value, (-10, 10))
-    annotate_max_values(ax2, dict(zip(dates,temperature)), 'grey', max_temperature_value, (10, 10))
+    annotate_max_values(ax1, dict(zip(dates,percipitation)), 'gray', max_precipitation_value, (10, 10), 'mm')
+    annotate_max_values(ax2, dict(zip(dates,temperature)), 'black', max_temperature_value, (20, 10),'°C')
 
     plt.tight_layout()
     plt.subplots_adjust(left=0.1, bottom=0.136, right=0.926, top=0.99)

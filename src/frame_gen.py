@@ -80,7 +80,7 @@ def add_current_time(d, now):
     d.text((x_position, 0), current_time, font=large_font, fill=0)
     return d
 
-def create_image():
+def create_image(rotate=False):
     local_tz = tz.tzlocal()
     # get data:
     now = datetime.now(tz=local_tz)
@@ -93,6 +93,8 @@ def create_image():
     img = paste_weather_data(img, weather_data)
     d = add_current_time(d, now)
     d = draw_todo_items(d, img, calendars, weather_data)
+    if rotate:
+            img = img.rotate(180)
     return img
 
 if __name__ == '__main__':
