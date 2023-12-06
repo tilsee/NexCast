@@ -22,9 +22,6 @@ sys.path.append(script_directory)
 def get_weather(now = None):
     if now is None:
         now = datetime.now(timezone.utc)
-
-    print(f"Now: {now}")  # Print the current time
-
     url = open_meteo_url
     response = requests.get(url)
     data = response.json()['minutely_15']
