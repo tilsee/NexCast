@@ -39,18 +39,12 @@ def customize_plot(ax):
     ax.tick_params(axis='y', which='both', left=False, labelleft=False, right=False, labelright=False)
     ax.xaxis.set_major_formatter(DateFormatter('%H'))
 
-def annotate_max_values(ax, data, color, max_value, xytext_offset, unit=''):
-    max_date = None
-    for date, value in data.items():
-        if value == max_value:
-            max_date = date
-            break
-    if max_date is not None and max_value is not None and max_value > 0:
-        max_date_float = matplotlib.dates.date2num(max_date)  # Convert max_date to float
-        if max_date_float < ax.get_xlim()[1] - ax.get_xlim()[0]:
-            xytext_offset = (xytext_offset[0] * -1, xytext_offset[1])
-        ax.annotate(f'{str(round(max_value,2))+ unit}', xy=(max_date, max_value), xytext=xytext_offset, 
-                    textcoords='offset points', ha='center', color=color)
+def annotate_max_values(ax, data, color, max_value, x_pos, xytext_offset, unit=''):
+    max_date_float = matplotlib.dates.date2num(x_pos)  # Convert max_date to float
+    if max_date_float < ax.get_xlim()[1] - ax.get_xlim()[0]:
+        xytext_offset = (xytext_offset[0] * -1, xytext_offset[1])
+    ax.annotate(f'{str(round(max_value,2))+ unit}', xy=(x_pos, max_value), xytext=xytext_offset, 
+                textcoords='offset points', ha='center', color=color)
         
 def will_it_rain(weather_data, start_time, end_time):
     rain_status = 0
@@ -108,8 +102,8 @@ def plot_weather(next_24h_data=None):
     max_precipitation_value = max(percipitation)
     max_temperature_value = max(temperature)
 
-    #annotate_max_values(ax1, dict(zip(dates,percipitation)), 'gray', max_precipitation_value, (10, 10), 'mm')
-    annotate_max_values(ax2, dict(zip(dates,temperature)), 'black', max_temperature_value, (20, 10),'°C')
+    annotate_max_values(ax1, dict(zip(dates,percipitation)), 'black', max_precipitation_value, max(dates),(-25, 10), 'mm')
+    annotate_max_values(ax2, dict(zip(dates,temperature)), 'gray', max_temperature_value, min(dates),(20, 10),'°C')
 
     plt.tight_layout()
     plt.subplots_adjust(left=0.1, bottom=0.136, right=0.926, top=0.99)
