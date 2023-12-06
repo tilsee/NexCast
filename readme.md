@@ -34,7 +34,7 @@ To run the code in this repository, you'll need to copy the files **epdconfig.py
 
 ## Automating using cronjob
 
-using crontab -e add the following line to the end of the file:
+using `crontab -e` add the following line to the end of the file:
 ```
 */15 * * * * cd /home/imenoxs/NexCast/src && /usr/bin/python /home/imenoxs/NexCast/src/main.py >> /home/imenoxs/NexCast/src/cron.log 2>&1
 ```

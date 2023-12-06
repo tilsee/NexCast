@@ -2,7 +2,7 @@ from PIL import Image, ImageDraw, ImageFont
 from datetime import datetime
 import weather
 import get_nextcloud_dat
-from config import small_font_name, small_font_size, medium_font_name, medium_font_size, large_font_name, large_font_size, debug, ical_urls
+from config import (small_font_name, small_font_size, medium_font_name, medium_font_size, large_font_name, large_font_size, debug, ical_urls)
 import weather
 import date
 import sys
@@ -18,8 +18,6 @@ sys.path.append(script_directory)
 small_font = ImageFont.truetype(small_font_name, small_font_size)
 medium_font = ImageFont.truetype(medium_font_name, medium_font_size)
 large_font = ImageFont.truetype(large_font_name, large_font_size)
-
-
 
 def create_base_image():
     img = Image.new('1', (480, 800), color=1)
