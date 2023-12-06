@@ -8,16 +8,18 @@ This project was partly inspired by [zoharsf](https://github.com/zoharsf/Raspber
 
 # Getting started
 
-## requirements
+
+## Requirements
 
 Several packages are required to run this project. The following packages are required:
-sudo apt-get install libxslt1-dev
-sudo apt-get install python3-pip
-sudo apt-get install python3-pil
-sudo apt-get install python3-numpy
-sudo apt-get install python-matplotlib
-sudo pip3 install RPi.GPIO
-sudo pip3 install spidev
+
+- sudo apt-get install libxslt1-dev
+- sudo apt-get install python3-pip
+- sudo apt-get install python3-pil
+- sudo apt-get install python3-numpy
+- sudo apt-get install python-matplotlib
+- sudo pip3 install RPi.GPIO
+- sudo pip3 install spidev
 
 
 ## Installation
@@ -40,3 +42,7 @@ using `crontab -e` add the following line to the end of the file:
 ```
 
 refreshes all 15 min and logs output to cron.log file inside repo
+
+## Hardware setup
+- Rasperry Pi Zero 2 W
+- waveshare 7.5inch e-Paper HAT

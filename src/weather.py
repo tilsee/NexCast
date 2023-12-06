@@ -2,13 +2,15 @@ import matplotlib.pyplot as plt
 from matplotlib.dates import DateFormatter
 from io import BytesIO
 from PIL import Image
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import requests
 from config import open_meteo_url
 import sys
 import os
 from PIL import Image
 import matplotlib
+import matplotlib.dates as mdates
+from dateutil import tz
 
 # Get the directory of the current script
 script_directory = os.path.dirname(os.path.abspath(__file__))
@@ -18,14 +20,19 @@ sys.path.append(script_directory)
 
 
 def get_weather(now = None):
+    if now is None:
+        now = datetime.now(timezone.utc)
+
+    print(f"Now: {now}")  # Print the current time
+
     url = open_meteo_url
     response = requests.get(url)
     data = response.json()['minutely_15']
     output_data = {}
     for i in range(len(data['temperature_2m'])):
-        time = datetime.fromisoformat(data['time'][i])
-        if time > now.replace(tzinfo=None) and time < now.replace(tzinfo=None) + timedelta(hours=24):
-            output_data[time] = { 'temperature': data['temperature_2m'][i], 'percipitation': data['precipitation'][i] }
+        time = datetime.fromisoformat(data['time'][i]).replace(tzinfo=tz.tzlocal())
+        if now <= time < now + timedelta(hours=24):
+            output_data[time] = {'temperature': data['temperature_2m'][i], 'percipitation': data['precipitation'][i]}
     return output_data
 
 def customize_plot(ax):
@@ -51,9 +58,9 @@ def annotate_max_values(ax, data, color, max_value, xytext_offset, unit=''):
 def will_it_rain(weather_data, start_time, end_time):
     rain_status = 0
     if type(start_time) == str:
-        start_time = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
+        start_time = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S").replace(tzinfo=tz.tzlocal())
     if type(end_time) == str:
-        end_time = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S")
+        end_time = datetime.strptime(end_time, "%Y-%m-%d %H:%M:%S").replace(tzinfo=tz.tzlocal())
     
     for date_key in weather_data:
         if start_time <= date_key <= end_time:
@@ -110,9 +117,11 @@ def plot_weather(next_24h_data=None):
     plt.tight_layout()
     plt.subplots_adjust(left=0.1, bottom=0.136, right=0.926, top=0.99)
 
+    # Format x-axis ticks as hours
+    ax1.xaxis.set_major_formatter(mdates.DateFormatter('%H'))
+
     buf = BytesIO()
     fig.savefig(buf, format='png', bbox_inches='tight', pad_inches=0)
     buf.seek(0)
     plot_image_pil = Image.open(buf).resize((frame_width, frame_height))
-
     return plot_image_pil, max_precipitation_value, max_temperature_value
