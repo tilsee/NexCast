@@ -102,7 +102,7 @@ def plot_weather(next_24h_data=None):
     max_precipitation_value = max(percipitation)
     max_temperature_value = max(temperature)
 
-    annotate_max_values(ax1, dict(zip(dates,percipitation)), 'black', max_precipitation_value, max(dates),(-25, 10), 'mm')
+    annotate_max_values(ax1, dict(zip(dates,percipitation)), 'black', max_precipitation_value, max(dates),(-25  , 10), 'mm')
     annotate_max_values(ax2, dict(zip(dates,temperature)), 'gray', max_temperature_value, min(dates),(20, 10),'°C')
 
     plt.tight_layout()

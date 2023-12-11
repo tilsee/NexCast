@@ -1,5 +1,5 @@
 import caldav
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date, time
 from config import username, password, caldav_url, IGNORED_CALENDARS
 from dateutil import tz
 from icalendar import Calendar
@@ -45,6 +45,12 @@ def filter_events(events, now, current_date, current_hour, calendar, local_tz):
                 start_date_event = component.get('dtstart').dt
                 end_date_event = component.get('dtend').dt
 
+                # Convert date to datetime if necessary
+                if isinstance(start_date_event, date):
+                    start_date_event = datetime.combine(start_date_event, time.min, tzinfo=tz.tzutc())
+                if isinstance(end_date_event, date):
+                    end_date_event = datetime.combine(end_date_event, time.min, tzinfo=tz.tzutc())
+
                 # Filter out events based on the provided logic
                 if end_date_event < now:
                     continue
@@ -52,7 +58,7 @@ def filter_events(events, now, current_date, current_hour, calendar, local_tz):
                     continue
                 if current_hour >= 18 and start_date_event.date() > current_date + timedelta(days=1):
                     continue
-
+ 
                 summary = component.get('summary')
                 description = component.get('description')
 
