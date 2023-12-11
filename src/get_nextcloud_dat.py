@@ -44,19 +44,25 @@ def filter_events(events, now, current_date, current_hour, calendar, local_tz):
             if component.name == "VEVENT":
                 start_date_event = component.get('dtstart').dt
                 end_date_event = component.get('dtend').dt
-
+                print(component.get('summary')+str(type(start_date_event)))
                 # Convert date to datetime if necessary
-                if isinstance(start_date_event, date):
-                    start_date_event = datetime.combine(start_date_event, time.min, tzinfo=tz.tzutc())
-                if isinstance(end_date_event, date):
-                    end_date_event = datetime.combine(end_date_event, time.min, tzinfo=tz.tzutc())
+                if isinstance(start_date_event, date) and not isinstance(start_date_event, datetime):
+                    #print(component.get('summary')+str(start_date_event))
+                    start_date_event = datetime.combine(start_date_event, time.min, tzinfo=tz.tzlocal())
+                if isinstance(end_date_event, date) and not isinstance(end_date_event, datetime):
+                    #print(component.get('summary')+str(end_date_event))
+                    end_date_event = datetime.combine(end_date_event, time.min, tzinfo=tz.tzlocal())
 
                 # Filter out events based on the provided logic
                 if end_date_event < now:
+                    print("now: "+ str(now)+" end_date_event: "+str(end_date_event))
+                    print("1"+component.get('summary'))
                     continue
                 if current_hour < 18 and start_date_event.date() != current_date:
-                    continue
+                   #print("2"+component.get('summary'))
+                   continue
                 if current_hour >= 18 and start_date_event.date() > current_date + timedelta(days=1):
+                    #print("3"+component.get('summary'))
                     continue
  
                 summary = component.get('summary')
@@ -64,10 +70,10 @@ def filter_events(events, now, current_date, current_hour, calendar, local_tz):
 
                 # Convert to local time zone
                 if start_date_event is not None:
-                    start_date_event = start_date_event.replace(tzinfo=tz.tzutc()).astimezone(local_tz)
+                    start_date_event = start_date_event.replace(tzinfo=tz.tzlocal()).astimezone(local_tz)
                     start_date_event = start_date_event.strftime('%Y-%m-%d %H:%M:%S')
                 if end_date_event is not None:
-                    end_date_event = end_date_event.replace(tzinfo=tz.tzutc()).astimezone(local_tz)
+                    end_date_event = end_date_event.replace(tzinfo=tz.tzlocal()).astimezone(local_tz)
                     end_date_event = end_date_event.strftime('%Y-%m-%d %H:%M:%S')
                 
                 entries_list.append({
@@ -134,10 +140,10 @@ def fetch_public_events(ical_urls=[], now=None):
 
                 # Convert to local time zone
                 if start_date_event is not None:
-                    start_date_event = start_date_event.replace(tzinfo=tz.tzutc()).astimezone(local_tz)
+                    start_date_event = start_date_event.replace(tzinfo=tz.tzlocal()).astimezone(local_tz)
                     start_date_event = start_date_event.strftime('%Y-%m-%d %H:%M:%S')
                 if end_date_event is not None:
-                    end_date_event = end_date_event.replace(tzinfo=tz.tzutc()).astimezone(local_tz)
+                    end_date_event = end_date_event.replace(tzinfo=tz.tzlocal()).astimezone(local_tz)
                     end_date_event = end_date_event.strftime('%Y-%m-%d %H:%M:%S')
 
                 entries_list.append({
