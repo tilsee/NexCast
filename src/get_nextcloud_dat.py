@@ -37,13 +37,9 @@ def get_dates(start_date_str=None, end_date_str=None, now=None):
 
 def filter_events(events, now, current_date, current_hour, calendar, local_tz):
     entries_list = []
-    switch = False
     for event in events:
         icalendar = Calendar.from_ical(event.data)
         for component in icalendar.walk():
-            if switch == False:
-                switch = True
-                print(str(component))
             if component.name == "VEVENT":
                 start_date_event = component.get('dtstart').dt
                 end_date_event = component.get('dtend').dt

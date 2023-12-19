@@ -49,14 +49,15 @@ def draw_todo_items(d, img, nextcloud_data, weather_data):
     for todo in nextcloud_data:
         summary = todo['summary'][:10]
         calendar_name = str_len_5_conv(todo['calendar'])
+        icon = None
         try:
             tstart = todo['due']
             tend = todo['end_date']
             due = datetime.strptime(tstart, '%Y-%m-%d %H:%M:%S')
             due_time = due.strftime("%H:%M")
+            icon = weather.get_icon(tstart, tend, weather_data)
         except:  due = due_time = ''
 
-        icon = weather.get_icon(tstart, tend, weather_data)
         d.text((0, y_position), str(i)+'.', font=large_font, fill=0)
         d.text((30, y_position), calendar_name, font=large_font, fill=0)
         d.text((115, y_position), ': '+summary, font=large_font, fill=0)
@@ -80,19 +81,26 @@ def add_current_time(d, now):
 
 def create_image(rotate=False):
     local_tz = tz.tzlocal()
-    # get data:
     now = datetime.now(tz=local_tz)
-    calendars = get_nextcloud_dat.fetch_all_events(now = now, ical_urls=ical_urls)
-    weather_data = weather.get_weather(now)
+    
+    try:
+        calendars = get_nextcloud_dat.fetch_all_events(now=now, ical_urls=ical_urls)
+    except Exception as e:
+        # If an error occurs, create a placeholder event with the error description
+        error_event = {'calendar': 'Error', 'summary': f'fetching events: {str(e)}', 'due': ''}
+        calendars = [error_event]
 
-    # create image:
+    weather_data = weather.get_weather(now)
+    
     img, d = create_base_image()
     img = paste_date_section(img, now)
     img = paste_weather_data(img, weather_data)
     d = add_current_time(d, now)
     d = draw_todo_items(d, img, calendars, weather_data)
+    
     if rotate:
-            img = img.rotate(180)
+        img = img.rotate(180)
+    
     return img
 
 if __name__ == '__main__':
